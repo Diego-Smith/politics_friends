@@ -15,6 +15,5 @@ class PoliticTable(tag: Tag) extends Table[Politic](tag, "POLITIC") {
   def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
   def name = column[String]("NAME", O.NotNull)
   def dateInsert = column[DateTime]("DATE_INSERT")
-
   def * = (id.?, name, dateInsert) <>(Politic.tupled, Politic.unapply)
 }
