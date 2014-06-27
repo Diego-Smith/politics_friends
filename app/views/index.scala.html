@@ -1,9 +1,23 @@
-@(message: String)
+@(records: List[(String, List[(String, Long)])] )
 
 @main("Welcome to Play Framework") {
 
     <div class="well">
-        <h1>@message</h1>
+        <table>
+
+        @records.map { x =>
+            <tr>
+                <td>
+                    <h3>@x._1</h3>
+                </td>
+                  @x._2.map { record =>
+                <td>
+                    <p>@record._1 - @record._2</p>
+                </td>
+                    }
+            </tr>
+        }
+        </table>
     </div>
 
 }
