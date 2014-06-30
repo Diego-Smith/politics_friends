@@ -1,23 +1,65 @@
 @(records: List[(String, List[(String, Long)])] )
 
 @main("Welcome to Play Framework") {
+    <div id="mainTable" class="well">
+        <table  class="table table-striped">
+            <tr>
+                <th>Day</th>
+            @records(0)._2.map { x =>
+                <th>@x._1</th>
+                    }
+            </tr>
 
-    <div class="well">
-        <table>
 
         @records.map { x =>
             <tr>
                 <td>
-                    <h3>@x._1</h3>
+                    <p>@x._1</p>
                 </td>
                   @x._2.map { record =>
                 <td>
-                    <p>@record._1 - @record._2</p>
+                    <p>@record._2</p>
                 </td>
                     }
             </tr>
         }
         </table>
+
+        <a class="btn btn-default" type="button" href="#" id="btn_1" onclick="clickIt(event)">
+            <span class="glyphicon-plus"></span>
+        </a>
     </div>
 
+
+<script type="text/javascript">
+$('#mainTable').editableTableWidget().numericInputExample().find('td:first').focus();
+
+
+   var successFn = function(data) {
+   if(data == "true"){
+   }
+   else{
+	   }
+   console.debug("Success of Ajax Call");
+   console.debug(data);
+  };
+  var errorFn = function(err) {
+   console.debug("Error of ajax Call");
+   console.debug(err);
+    $('#alert-box').html('');
+    $("#alert-box").append('<div class="alert alert-error">' + '<a class="close" data-dismiss="alert">×</a>  ' +
+			   'bad value '+ '</div>');
+  }
+  ajax1 = {
+    success: successFn,
+    error: errorFn
+  }
+
+
+  function clickIt(e) {
+    e.preventDefault()
+       console.debug("aaa");
+        jsRoutes.controllers.Application.addRecord("10/12/2005","rillo",123).ajax(ajax1);
+    }
+</script>
 }

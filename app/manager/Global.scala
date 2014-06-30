@@ -1,3 +1,4 @@
+import manager.Util
 import org.joda.time.DateTime
 import org.joda.time.format.{DateTimeFormatter, DateTimeFormatterBuilder}
 import play.api.GlobalSettings
@@ -15,7 +16,7 @@ import scala.slick.driver.H2Driver.simple._
 /**
  * Created by diego on 26/06/14.
  */
-object Global extends GlobalSettings {
+object Global extends GlobalSettings with Util {
 
   override def onStart(app: Application) {
     val dataMap: Map[String, List[(String, String, String)]] = parseFile("data/data")
@@ -43,7 +44,7 @@ object Global extends GlobalSettings {
     play.api.db.slick.DB.withSession {
       implicit session: Session => {
 
-        //TODO: change sql statement with a static type checking
+        //TODO: change sql statement with a static type checking statement
         session.prepareStatement("delete from record").execute()
         session.prepareStatement("delete from politic").execute()
 
@@ -55,15 +56,6 @@ object Global extends GlobalSettings {
           (record._1, record._2.map(t => (id, t._2, t._3)))
         })
 
-        val formatterBuilder: DateTimeFormatterBuilder = new DateTimeFormatterBuilder()
-        val formatter: DateTimeFormatter =
-          formatterBuilder
-          .appendDayOfMonth(2)
-          .appendLiteral('/')
-          .appendMonthOfYear(2)
-          .appendLiteral('/')
-          .appendYear(4, 4)
-          .toFormatter
 
         for {
           politicRecords <- mapRecordsWithUserId
