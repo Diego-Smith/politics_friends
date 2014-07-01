@@ -21,7 +21,19 @@ object Global extends GlobalSettings {
   override def onStart(app: Application) {
     val dataMap: Map[String, List[(String, String, String)]] = parseFile("data/data")
     obtainDB
-    dbOperations(dataMap)
+    if(checkDbIsEmpty) {
+      fillDb(dataMap)
+    }
+  }
+
+  def checkDbIsEmpty() : Boolean = {
+    val politicTable = TableQuery[PoliticTable]
+    play.api.db.slick.DB.withSession {
+      implicit session: Session => {
+        val firstOption: Option[PoliticTable#TableElementType] = politicTable.firstOption
+        firstOption.map(_ => false).getOrElse(true)
+      }
+    }
   }
 
   def parseFile(filePath: String) = {
@@ -38,7 +50,7 @@ object Global extends GlobalSettings {
     cleanList.groupBy(_._1)
   }
 
-  def dbOperations(dataMap: Map[String, List[(String, String, String)]]) = {
+  def fillDb(dataMap: Map[String, List[(String, String, String)]]) = {
     val politicTable = TableQuery[PoliticTable]
     val recordTable = TableQuery[RecordTable]
     play.api.db.slick.DB.withSession {

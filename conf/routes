@@ -4,7 +4,7 @@
 
 GET     /                                                 controllers.Application.index()
 POST    /record/update/date/:dateOld/:dateNew               controllers.Application.updateDate(dateOld: String, dateNew: String)
-POST    /record/add/record/:date/:name/:friends                  controllers.Application.addRecord(date: String, name: String, friends: Long)
+POST    /record/add/record/1:date/:name/:friends                  controllers.Application.addRecord(date: String, name: String, friends: Long)
 POST    /record/update/record/:date/:name/:friends               controllers.Application.updateRecord(date: String, name: String, friends: String)
 
 # Map static resources from the /public folder to the /assets URL path

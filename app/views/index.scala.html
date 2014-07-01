@@ -22,7 +22,8 @@
         }
         </table>
 
-        <a class="btn btn-default" type="button" href="#" id="btn_1" onclick="addRecord(@{records(0)._2.size})">
+        <!--<a class="btn btn-default" type="button" href="#" id="btn_1" onclick="addRecord(@{records(0)._2.size})">-->
+        <a class="btn btn-default" type="button" href="#" id="btn_1" onclick="addRecord()">
             <span class="glyphicon-plus">A</span>
         </a>
     </div>
@@ -59,13 +60,17 @@
        jsRoutes.controllers.Application.addRecord("10/12/2005","rillo",123).ajax(ajax1);
   }
 
-function addRecord(records)
+function addRecord()
 {
-    console.debug(records)
     var trInsert = '<tr><td class="tddate">@{manager.Util.nowFormatted}</td>@{records(0)._2.map(x =>
         <td politic={x._1}>0</td>
     )}</tr>';
 
+    var rec = @Html(records(0)._2.map(x => x._1).mkString("['","','","\']"));
+
+    for (i = 0; i < rec.length; i++) {
+        jsRoutes.controllers.Application.updateRecord('@{manager.Util.nowFormatted}', rec[i], 0).ajax(ajax1);
+    }
 
     $('#mainTable tr:last').after(trInsert);
     $('#mainTable').editableTableWidget().numericInputExample();
