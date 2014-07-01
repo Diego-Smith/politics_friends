@@ -31,9 +31,10 @@ object Application extends Controller {
         } yield (politic.name, record.friends, record.dateInsert)
         val listOfRecords: List[(String, Long, DateTime)] = queryExtractPoliticRecords.list()
 
-        val values: Map[String, List[(String, Long)]] = listOfRecords.groupBy(_._3.toString("dd/MM/YYYY"))
+        val values: Map[DateTime, List[(String, Long)]] = listOfRecords.groupBy(_._3)
           .mapValues(x => x.map(value => (value._1, value._2)))
-        values.toList.sortBy(_._1)
+        val listDateTime = values.toList.sortBy(_._1)
+        listDateTime.map((x : (DateTime, List[(String , Long)])) => (x._1.toString("dd/MM/YYYY"), x._2))
       }
     }
     Ok(views.html.index(records))
