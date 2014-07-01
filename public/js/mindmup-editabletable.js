@@ -42,10 +42,16 @@ $.fn.editableTableWidget = function (options) {
 				if (evt.result === false) {
 					active.html(originalContent);
 				} else {
-				    var tddate = active.parent().find(".tddate");
-                    var val = active.text().trim();
-                    var politic = active.attr("politic");
-                    jsRoutes.controllers.Application.updateRecord(tddate.text().trim(), politic, val).ajax(ajax1);
+                    if ('tddate' == active.attr("class")) {
+                        console.log('TODO')
+                        var val = active.text().trim();
+                        jsRoutes.controllers.Application.updateDate(originalContent, val).ajax(ajax1);
+                    } else {
+				        var tddate = active.parent().find(".tddate");
+                        var val = active.text().trim();
+                        var politic = active.attr("politic");
+                        jsRoutes.controllers.Application.updateRecord(tddate.text().trim(), politic, val).ajax(ajax1);
+                    }
 				}
 			},
 			movement = function (element, keycode) {

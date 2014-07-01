@@ -56,6 +56,25 @@ object Application extends Controller {
     }
   }
 
+  def updateDate(beforeDate: String, newDate: String) = Action {
+    play.api.db.slick.DB.withSession {
+      implicit session: Session => {
+        println("testtest")
+        val beforeDateParsed: DateTime = DateTime.parse(beforeDate, Util.formatter)
+        val newDateParsed: DateTime = DateTime.parse(newDate, Util.formatter)
+        
+        val recordsAlreadyIn: List[RecordTable#TableElementType] = recordTable.filter(_.dateInsert === newDateParsed).list()
+        recordsAlreadyIn match {
+          case List() => {
+            recordTable.filter(_.dateInsert === beforeDateParsed).map(_.dateInsert).update(newDateParsed)
+            Ok("true")
+          }
+          case head :: tail => Ok("overwrite")
+        }
+      }
+    }
+  }
+
   def updateRecord(date: String, politicName: String, friends: String) = Action {
     play.api.db.slick.DB.withSession {
       implicit session: Session => {
@@ -84,6 +103,7 @@ object Application extends Controller {
       Ok(
         Routes.javascriptRouter("jsRoutes")(
           routes.javascript.Application.addRecord,
+          routes.javascript.Application.updateDate,
           routes.javascript.Application.updateRecord
         )
       )
