@@ -11,9 +11,11 @@ import scala.collection.immutable.ListMap
 import play.api.Routes
 import org.joda.time.format.{DateTimeFormatterBuilder, DateTimeFormatter}
 import manager.Util
+import com.github.tototoshi.slick.H2JodaSupport._
+import scala.slick.lifted
 
 
-object Application extends Controller with Util {
+object Application extends Controller {
 
   val politicTable = TableQuery[PoliticTable]
   val recordTable = TableQuery[RecordTable]
@@ -29,7 +31,8 @@ object Application extends Controller with Util {
         } yield (politic.name, record.friends, record.dateInsert)
         val listOfRecords: List[(String, Long, DateTime)] = queryExtractPoliticRecords.list()
 
-        val values: Map[String, List[(String, Long)]] = listOfRecords.groupBy(_._3.toString("dd/MM/YYYY")).mapValues(x => x.map(value => (value._1, value._2)))
+        val values: Map[String, List[(String, Long)]] = listOfRecords.groupBy(_._3.toString("dd/MM/YYYY"))
+          .mapValues(x => x.map(value => (value._1, value._2)))
         values.toList.sortBy(_._1)
       }
     }
@@ -43,7 +46,7 @@ object Application extends Controller with Util {
 
         val record: Option[Record] = for {
           politic <- politicOpt
-        } yield Record(None, DateTime.parse(date, formatter), friends, politic.id.get)
+        } yield Record(None, DateTime.parse(date, Util.formatter), friends, politic.id.get)
 
         record match {
           case Some(r) => recordTable += r; Ok("true")
@@ -53,11 +56,35 @@ object Application extends Controller with Util {
     }
   }
 
+  def updateRecord(date: String, politicName: String, friends: String) = Action {
+    play.api.db.slick.DB.withSession {
+      implicit session: Session => {
+        val politic: Politic = politicTable.filter(_.name === politicName).first
+        val dateParsed: DateTime = DateTime.parse(date, Util.formatter)
+
+        val record = for {
+          (p, r) <- politicTable innerJoin recordTable on (_.id === _.idPolitic)
+          if (r.dateInsert === dateParsed && (p.name === politic.name))
+        } yield (r)
+
+
+        val listRecords:  List[Record] = record.list()
+
+        listRecords match {
+          case List() => recordTable += Record(None, dateParsed, friends.toLong, politic.id.get)
+          case head :: tail => recordTable.filter(_.id === head.id).map(_.friends).update(friends.toLong)
+        }
+        Ok("true")
+      }
+    }
+  }
+
   def javascriptRoutes = Action {
     implicit request =>
       Ok(
         Routes.javascriptRouter("jsRoutes")(
-          routes.javascript.Application.addRecord
+          routes.javascript.Application.addRecord,
+          routes.javascript.Application.updateRecord
         )
       )
   }

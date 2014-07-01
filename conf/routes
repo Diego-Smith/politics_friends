@@ -3,7 +3,8 @@
 # ~~~~
 
 GET     /                                                 controllers.Application.index()
-POST    /record/add/:date/:name/:friends                 controllers.Application.addRecord(date: String, name: String, friends: Long)
+POST    /record/add/:date/:name/:friends                  controllers.Application.addRecord(date: String, name: String, friends: Long)
+POST    /record/update/:date/:name/:friends               controllers.Application.updateRecord(date: String, name: String, friends: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                                     controllers.Assets.at(path="/public", file)

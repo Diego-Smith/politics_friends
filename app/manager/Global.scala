@@ -16,7 +16,7 @@ import scala.slick.driver.H2Driver.simple._
 /**
  * Created by diego on 26/06/14.
  */
-object Global extends GlobalSettings with Util {
+object Global extends GlobalSettings {
 
   override def onStart(app: Application) {
     val dataMap: Map[String, List[(String, String, String)]] = parseFile("data/data")
@@ -60,7 +60,7 @@ object Global extends GlobalSettings with Util {
         for {
           politicRecords <- mapRecordsWithUserId
           tuple <- politicRecords._2
-        } recordTable += Record(None, DateTime.parse(tuple._3, formatter), tuple._2.toLong, tuple._1)
+        } recordTable += Record(None, DateTime.parse(tuple._3, Util.formatter), tuple._2.toLong, tuple._1)
       }
     }
   }

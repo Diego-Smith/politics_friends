@@ -23,22 +23,29 @@ $.fn.editableTableWidget = function (options) {
 						.width(active.width())
 						.height(active.height())
 						.focus();
+
 					if (select) {
 						editor.select();
 					}
 				}
 			},
 			setActiveText = function () {
-				var text = editor.val(),
+				var text = editor.val().trim(),
 					evt = $.Event('change'),
 					originalContent;
 				if (active.text() === text || editor.hasClass('error')) {
 					return true;
 				}
 				originalContent = active.html();
+
 				active.text(text).trigger(evt, text);
 				if (evt.result === false) {
 					active.html(originalContent);
+				} else {
+				    var tddate = active.parent().find(".tddate");
+                    var val = active.text().trim();
+                    var politic = active.attr("politic");
+                    jsRoutes.controllers.Application.updateRecord(tddate.text().trim(), politic, val).ajax(ajax1);
 				}
 			},
 			movement = function (element, keycode) {
@@ -57,6 +64,7 @@ $.fn.editableTableWidget = function (options) {
 			setActiveText();
 			editor.hide();
 		}).keydown(function (e) {
+
 			if (e.which === ENTER) {
 				setActiveText();
 				editor.hide();
