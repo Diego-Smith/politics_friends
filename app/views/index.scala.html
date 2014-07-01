@@ -1,46 +1,50 @@
 @(records: List[(String, List[(String, Long)])] )
 
 @{import manager.Util}
-@main("Welcome to Play Framework") {
-    <div id="mainTable" class="well">
-        <table  class="table table-striped">
-            <tr>
-                <th>Day</th>
+@main("Welcome to to") {
+<div id="mainTable" class="well">
+    <!--<a 2class="btn btn-default" type="button" href="#" id="btn_1" onclick="addRecord(@{records(0)._2.size})">-->
+    <a class="btn btn-default" type="button" href="#" id="btn_1" onclick="addRecord()">
+        <span class="glyphicon-plus">Add</span>
+    </a>
+    <a class="btn btn-default" type="button" href="#" id="btn_1" onclick="saveRecords()">
+        <span class="glyphicon-plus">Save</span>
+    </a>
+
+    <div class="voffset2"><!-- --> </div>
+    <table class="table table-striped">
+        <tr>
+            <th>Day</th>
             @records(0)._2.map { x =>
-                <th>@x._1</th>
-                    }
-            </tr>
+            <th>@x._1</th>
+            }
+        </tr>
 
 
         @records.map { x =>
-            <tr>
-                <td class="tddate">@x._1</td>
-                  @x._2.map { record =>
-                <td politic="@record._1">@record._2</td>
-                    }
-            </tr>
+        <tr>
+            <td class="tddate">@x._1</td>
+            @x._2.map { record =>
+            <td politic="@record._1">@record._2</td>
+            }
+        </tr>
         }
-        </table>
+    </table>
 
-        <!--<a class="btn btn-default" type="button" href="#" id="btn_1" onclick="addRecord(@{records(0)._2.size})">-->
-        <a class="btn btn-default" type="button" href="#" id="btn_1" onclick="addRecord()">
-            <span class="glyphicon-plus">A</span>
-        </a>
-    </div>
+</div>
 
 
 <script type="text/javascript">
-    $('#mainTable').editableTableWidget().numericInputExample().find('td:first').focus();
-
-
-   var successFn = function(data) {
-   if(data == "true"){
-   }
-   else{
-	   }
-   console.debug("Success of Ajax Call");
-   console.debug(data);
+  $('#mainTable').editableTableWidget().numericInputExample().find('td:first').focus();
+  var successFn = function(data) {
+    if(data == "true") {
+    }
+    else {
+	}
+    console.debug("Success of Ajax Call");
+    console.debug(data);
   };
+
   var errorFn = function(err) {
    console.debug("Error of ajax Call");
    console.debug(err);
@@ -48,20 +52,13 @@
     $("#alert-box").append('<div class="alert alert-error">' + '<a class="close" data-dismiss="alert">×</a>  ' +
 			   'bad value '+ '</div>');
   }
+
   ajax1 = {
     success: successFn,
     error: errorFn
   }
 
-
-  function clickIt(e) {
-    e.preventDefault()
-       console.debug("aaa");
-       jsRoutes.controllers.Application.addRecord("10/12/2005","rillo",123).ajax(ajax1);
-  }
-
-function addRecord()
-{
+  function addRecord() {
     var trInsert = '<tr><td class="tddate">@{manager.Util.nowFormatted}</td>@{records(0)._2.map(x =>
         <td politic={x._1}>0</td>
     )}</tr>';
@@ -74,6 +71,8 @@ function addRecord()
 
     $('#mainTable tr:last').after(trInsert);
     $('#mainTable').editableTableWidget().numericInputExample();
-}
+  }
 </script>
-}
+
+}<!--//END main parameter -->
+

@@ -7,12 +7,10 @@ import play.api.db.slick.Config.driver.simple._
 import play.api.Play.current
 import models.{Record, RecordTable, PoliticTable, Politic}
 import org.joda.time.DateTime
-import scala.collection.immutable.ListMap
 import play.api.Routes
-import org.joda.time.format.{DateTimeFormatterBuilder, DateTimeFormatter}
+import org.joda.time.format.DateTimeFormatter
 import manager.Util
 import com.github.tototoshi.slick.H2JodaSupport._
-import scala.slick.lifted
 
 
 object Application extends Controller {

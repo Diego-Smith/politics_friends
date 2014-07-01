@@ -56,9 +56,8 @@ object Global extends GlobalSettings {
     play.api.db.slick.DB.withSession {
       implicit session: Session => {
 
-        //TODO: change sql statement with a static type checking statement
-        session.prepareStatement("delete from record").execute()
-        session.prepareStatement("delete from politic").execute()
+//        session.prepareStatement("delete from record").execute()
+//        session.prepareStatement("delete from politic").execute()
 
         val mapRecordsWithUserId: Map[String, List[(Long, String, String)]] = dataMap.map(record => {
           val id: Long = politicTable.filter(_.name === record._1).firstOption match {
