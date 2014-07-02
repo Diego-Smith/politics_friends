@@ -4,10 +4,10 @@
 @main("Welcome to to") {
 <div id="mainTable" class="well">
     <!--<a 2class="btn btn-default" type="button" href="#" id="btn_1" onclick="addRecord(@{records(0)._2.size})">-->
-    <a class="btn btn-default" type="button" href="#" id="btn_1" onclick="addRecord()">
+    <a class="btn btn-default" type="button" href="#" onclick="addRecord()">
         <span class="glyphicon glyphicon-plus">Add</span>
     </a>
-    <a class="btn btn-default" type="button" href="#" id="btn_1" onclick="saveRecordsToFile()">
+    <a class="btn btn-default" type="button" href="#" onclick="saveRecordsToFile()">
         <span class="glyphicon glyphicon-floppy-disk">Save</span>
     </a>
 
@@ -27,7 +27,7 @@
                 @x._2.map { record =>
                 <td class="editable" politic="@record._1">@record._2</td>
                 }
-                <td><button class="btn btn-xs" type="button" href="#" id="btn_1" onclick="saveRecordsToFile()">
+                <td><button class="btn btn-xs" type="button" onclick="removeRecord(this)">
                     <span class="glyphicon-minus "></span>
                 </button></td>
             </tr>
@@ -100,7 +100,7 @@
     function addRecord() {
         var trInsert = '<tr><td class="tddate">@{manager.Util.nowFormatted}</td>@{records(0)._2.map(x =>
             <td politic={x._1}>0</td>
-        )}</tr>';
+        )} <td><button class="btn btn-xs" type="button" onclick="removeRecord(this)"><span class="glyphicon-minus"></span></button></td></tr>';
 
         var rec = @Html(records(0)._2.map(x => x._1).mkString("['","','","\']"));
 
@@ -111,6 +111,19 @@
         $('#mainTable tr:last').after(trInsert);
         $('#mainTable').editableTableWidget().numericInputExample();
     }
+    function removeRecord(e) {
+        var row = $('#recordTable').find(e).parent().parent();
+        var date = row.find('.tddate').text()
+
+        answerRemove = {
+        success: row.remove(),
+        error: errorFn
+         }
+        var val = jsRoutes.controllers.Application.removeRecords(date).ajax(answerRemove);
+    }
+
+
+
 </script>
 
 }<!--//END main parameter -->
