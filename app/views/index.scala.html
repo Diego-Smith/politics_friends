@@ -3,13 +3,16 @@
 @{import manager.Util}
 @main("Welcome to to") {
 <div id="mainTable" class="well">
-    <!--<a 2class="btn btn-default" type="button" href="#" id="btn_1" onclick="addRecord(@{records(0)._2.size})">-->
     <a class="btn btn-default" type="button" href="#" onclick="addRecord()">
         <span class="glyphicon glyphicon-plus">Add</span>
     </a>
     <a class="btn btn-default" type="button" href="#" onclick="saveRecordsToFile()">
         <span class="glyphicon glyphicon-floppy-disk">Save</span>
     </a>
+    <a class="btn btn-default" type="button" href="#" onclick="loadLastSave()">
+        <span class="glyphicon glyphicon-repeat">Reload</span>
+    </a>
+
 
     <div class="voffset2"><!-- --> </div>
     <table id="recordTable" class="table table-striped">
@@ -111,6 +114,24 @@
         $('#mainTable tr:last').after(trInsert);
         $('#mainTable').editableTableWidget().numericInputExample();
     }
+
+    function loadLastSave(e) {
+        $.ajax({
+            url: "/record/reload",
+            type: 'POST',
+            async: true,
+            cache: false,
+            timeout: 30000,
+            error: function(){
+                return true;
+            },
+            success: function(msg){
+                 console.log("answer")
+                 window.location.replace("/");
+            }
+        });
+    }
+
     function removeRecord(e) {
         var row = $('#recordTable').find(e).parent().parent();
         var date = row.find('.tddate').text()

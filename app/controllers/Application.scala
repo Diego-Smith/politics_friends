@@ -82,7 +82,7 @@ object Application extends Controller {
     Ok("true")
   }
 
-  def removeRecords(date: String) = DBAction { implicit rs =>
+  def removeRecords(date: String) = DBAction {  implicit rs =>
     val dateParsed: DateTime = DateTime.parse(date, Util.formatter)
     val delete: Int = recordTable.filter(_.dateInsert === dateParsed).delete
     if (delete > 0) {
@@ -125,6 +125,7 @@ object Application extends Controller {
           routes.javascript.Application.saveRecords,
           routes.javascript.Application.saveRecordsToFile,
           routes.javascript.Application.removeRecords,
+          routes.javascript.ConfigurationController.loadLastConfiguration,
           routes.javascript.Application.updateRecord
         )
       )
