@@ -17,8 +17,7 @@ libraryDependencies ++= Seq(
   "com.github.tototoshi" %% "slick-joda-mapper" % "1.1.0",
   "com.typesafe.play" %% "play-slick" % "0.6.0.1",
   "org.webjars" %% "webjars-play" % "2.2.0",
-  "org.webjars" % "bootstrap" % "2.3.1",
-  "org.webjars" % "jquery" % "1.8.3"
+  "org.webjars" % "bootstrap" % "3.0.0"
 )
 
 play.Project.playScalaSettings
@@ -26,3 +25,7 @@ play.Project.playScalaSettings
 scalaVersion := "2.10.4"
 
 autoScalaLibrary := false
+
+play.Keys.lessEntryPoints <<= baseDirectory { base =>
+  (base / "app" / "assets" / "stylesheets" * "layout.less")
+}

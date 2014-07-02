@@ -123,7 +123,7 @@ $.fn.editableTableWidget = function (options) {
 			}
 		});
 
-		element.find('td').prop('tabindex', 1);
+		element.find('td.editable').prop('tabindex', 1);
 
 		$(window).on('resize', function () {
 			if (editor.is(':visible')) {

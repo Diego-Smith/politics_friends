@@ -5,10 +5,10 @@
 <div id="mainTable" class="well">
     <!--<a 2class="btn btn-default" type="button" href="#" id="btn_1" onclick="addRecord(@{records(0)._2.size})">-->
     <a class="btn btn-default" type="button" href="#" id="btn_1" onclick="addRecord()">
-        <span class="glyphicon-plus">Add</span>
+        <span class="glyphicon glyphicon-plus">Add</span>
     </a>
     <a class="btn btn-default" type="button" href="#" id="btn_1" onclick="saveRecordsToFile()">
-        <span class="glyphicon-plus">Save</span>
+        <span class="glyphicon glyphicon-floppy-disk">Save</span>
     </a>
 
     <div class="voffset2"><!-- --> </div>
@@ -18,14 +18,18 @@
                 @records(0)._2.map { x =>
                 <th>@x._1</th>
                 }
+                <th width="20px">Actions</th>
             </tr>
 
             @records.map { x =>
             <tr>
-                <td class="tddate">@x._1</td>
+                <td class="tddate editable">@x._1</td>
                 @x._2.map { record =>
-                <td politic="@record._1">@record._2</td>
+                <td class="editable" politic="@record._1">@record._2</td>
                 }
+                <td><button class="btn btn-xs" type="button" href="#" id="btn_1" onclick="saveRecordsToFile()">
+                    <span class="glyphicon-minus "></span>
+                </button></td>
             </tr>
         }
     </table>
@@ -34,7 +38,7 @@
 
 
 <script type="text/javascript">
-    $('#recordTable').editableTableWidget().numericInputExample().find('td:first').focus();
+    $('#recordTable').editableTableWidget().numericInputExample();
 
     var successFn = function(data) {
         if(data == "true") {
