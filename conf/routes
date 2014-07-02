@@ -6,6 +6,8 @@ GET     /                                                 controllers.Applicatio
 POST    /record/update/date/:dateOld/:dateNew               controllers.Application.updateDate(dateOld: String, dateNew: String)
 POST    /record/add/record/1:date/:name/:friends                  controllers.Application.addRecord(date: String, name: String, friends: Long)
 POST    /record/update/record/:date/:name/:friends               controllers.Application.updateRecord(date: String, name: String, friends: String)
+POST    /record/update/records/save/:data               controllers.Application.saveRecords(data: String)
+POST    /record/update/records/savefile               controllers.Application.saveRecordsToFile()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                                     controllers.Assets.at(path="/public", file)

@@ -43,7 +43,6 @@ $.fn.editableTableWidget = function (options) {
 					active.html(originalContent);
 				} else {
                     if ('tddate' == active.attr("class")) {
-                        console.log('TODO')
                         var val = active.text().trim();
                         jsRoutes.controllers.Application.updateDate(originalContent, val).ajax(ajax1);
                     } else {

@@ -8,9 +8,12 @@ import play.api.Play.current
 import models.{Record, RecordTable, PoliticTable, Politic}
 import org.joda.time.DateTime
 import play.api.Routes
-import org.joda.time.format.DateTimeFormatter
 import manager.Util
 import com.github.tototoshi.slick.H2JodaSupport._
+import play.libs.Json
+import java.io.{FileWriter, File}
+import scalax.file.{Path, FileOps}
+import scalax.io.{Resource, Output}
 
 
 object Application extends Controller {
@@ -21,7 +24,7 @@ object Application extends Controller {
   implicit def dateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
 
   def index = Action {
-    val x:Option[Long] = Some(1L)
+    val x: Option[Long] = Some(1L)
     val records: List[(String, List[(String, Long)])] = play.api.db.slick.DB.withSession {
       implicit session: Session => {
         val queryExtractPoliticRecords = for {
@@ -32,13 +35,13 @@ object Application extends Controller {
         val values: Map[DateTime, List[(String, Long)]] = listOfRecords.groupBy(_._3)
           .mapValues(x => x.map(value => (value._1, value._2)))
         val listDateTime = values.toList.sortBy(_._1)
-        listDateTime.map((x : (DateTime, List[(String , Long)])) => (x._1.toString("dd/MM/YYYY"), x._2))
+        listDateTime.map((x: (DateTime, List[(String, Long)])) => (x._1.toString("dd/MM/YYYY"), x._2))
       }
     }
     Ok(views.html.index(records))
   }
 
-  def addRecord(date:String, politicName: String, friends: Long) = Action {
+  def addRecord(date: String, politicName: String, friends: Long) = Action {
     play.api.db.slick.DB.withSession {
       implicit session: Session => {
         val politicOpt: Option[Politic] = politicTable.filter(_.name === politicName).firstOption
@@ -61,7 +64,7 @@ object Application extends Controller {
         println("testtest")
         val beforeDateParsed: DateTime = DateTime.parse(beforeDate, Util.formatter)
         val newDateParsed: DateTime = DateTime.parse(newDate, Util.formatter)
-        
+
         val recordsAlreadyIn: List[RecordTable#TableElementType] = recordTable.filter(_.dateInsert === newDateParsed).list()
         recordsAlreadyIn match {
           case List() => {
@@ -86,12 +89,41 @@ object Application extends Controller {
         } yield (r)
 
 
-        val listRecords:  List[Record] = record.list()
+        val listRecords: List[Record] = record.list()
 
         listRecords match {
           case List() => recordTable += Record(None, dateParsed, friends.toLong, politic.id.get)
           case head :: tail => recordTable.filter(_.id === head.id).map(_.friends).update(friends.toLong)
         }
+        Ok("true")
+      }
+    }
+  }
+
+  def saveRecords(data: String) = Action {
+    println(data)
+    println(Json.parse(data))
+    Ok("true")
+  }
+
+  def saveRecordsToFile() = Action {
+    play.api.db.slick.DB.withSession {
+      implicit session: Session => {
+
+        val queryExtractPoliticRecords = for {
+          (politic, record) <- politicTable innerJoin recordTable on (_.id === _.idPolitic)
+        } yield (politic.name, record.friends, record.dateInsert)
+
+        val list: List[(String, Long, DateTime)] = queryExtractPoliticRecords.list()
+
+        val filePath = s"data/${new DateTime().toString("yyyyMMdd")}_data"
+
+        val output:Output = Resource.fromOutputStream(new java.io.FileOutputStream(filePath))
+        val line: String = list.map(el => {
+            s"${el._1};${el._2};${el._3.toString("dd/MM/yyyy")}"
+          }).mkString("\n")
+
+        output.write(s"$line")
         Ok("true")
       }
     }
@@ -103,6 +135,8 @@ object Application extends Controller {
         Routes.javascriptRouter("jsRoutes")(
           routes.javascript.Application.addRecord,
           routes.javascript.Application.updateDate,
+          routes.javascript.Application.saveRecords,
+          routes.javascript.Application.saveRecordsToFile,
           routes.javascript.Application.updateRecord
         )
       )

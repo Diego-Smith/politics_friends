@@ -7,27 +7,26 @@
     <a class="btn btn-default" type="button" href="#" id="btn_1" onclick="addRecord()">
         <span class="glyphicon-plus">Add</span>
     </a>
-    <a class="btn btn-default" type="button" href="#" id="btn_1" onclick="saveRecords()">
+    <a class="btn btn-default" type="button" href="#" id="btn_1" onclick="saveRecordsToFile()">
         <span class="glyphicon-plus">Save</span>
     </a>
 
     <div class="voffset2"><!-- --> </div>
-    <table class="table table-striped">
-        <tr>
-            <th>Day</th>
-            @records(0)._2.map { x =>
-            <th>@x._1</th>
-            }
-        </tr>
+    <table id="recordTable" class="table table-striped">
+            <tr>
+                <th>Day</th>
+                @records(0)._2.map { x =>
+                <th>@x._1</th>
+                }
+            </tr>
 
-
-        @records.map { x =>
-        <tr>
-            <td class="tddate">@x._1</td>
-            @x._2.map { record =>
-            <td politic="@record._1">@record._2</td>
-            }
-        </tr>
+            @records.map { x =>
+            <tr>
+                <td class="tddate">@x._1</td>
+                @x._2.map { record =>
+                <td politic="@record._1">@record._2</td>
+                }
+            </tr>
         }
     </table>
 
@@ -35,43 +34,79 @@
 
 
 <script type="text/javascript">
-  $('#mainTable').editableTableWidget().numericInputExample().find('td:first').focus();
-  var successFn = function(data) {
-    if(data == "true") {
-    }
-    else {
-	}
-    console.debug("Success of Ajax Call");
-    console.debug(data);
-  };
+    $('#recordTable').editableTableWidget().numericInputExample().find('td:first').focus();
 
-  var errorFn = function(err) {
-   console.debug("Error of ajax Call");
-   console.debug(err);
-    $('#alert-box').html('');
-    $("#alert-box").append('<div class="alert alert-error">' + '<a class="close" data-dismiss="alert">×</a>  ' +
-			   'bad value '+ '</div>');
-  }
+    var successFn = function(data) {
+        if(data == "true") {
+        }
+        else {
+        }
+        console.debug("Success of Ajax Call");
+        console.debug(data);
+        };
 
-  ajax1 = {
-    success: successFn,
-    error: errorFn
-  }
-
-  function addRecord() {
-    var trInsert = '<tr><td class="tddate">@{manager.Util.nowFormatted}</td>@{records(0)._2.map(x =>
-        <td politic={x._1}>0</td>
-    )}</tr>';
-
-    var rec = @Html(records(0)._2.map(x => x._1).mkString("['","','","\']"));
-
-    for (i = 0; i < rec.length; i++) {
-        jsRoutes.controllers.Application.updateRecord('@{manager.Util.nowFormatted}', rec[i], 0).ajax(ajax1);
+        var errorFn = function(err) {
+        console.debug("Error of ajax Call");
+        console.debug(err);
+        $('#alert-box').html('');
+        $("#alert-box").append('<div class="alert alert-error">' + '<a class="close" data-dismiss="alert">×</a>  ' +
+               'bad value '+ '</div>');
     }
 
-    $('#mainTable tr:last').after(trInsert);
-    $('#mainTable').editableTableWidget().numericInputExample();
-  }
+    ajax1 = {
+        success: successFn,
+        error: errorFn
+    }
+
+    function saveRecordsToFile() {
+        jsRoutes.controllers.Application.saveRecordsToFile().ajax(ajax1);
+    }
+
+    function saveRecords() {
+
+        var header = Array();
+
+        $("table tr th").each(function(i, v){
+        header[i] = $(this).text();
+        })
+
+        console.log(header);
+
+        var data = Array();
+
+        $("table tr").each(function(i, v){
+          data[i] = Array();
+           $(this).children('th').each(function(ii, vv){
+              if ($(this).text() != null) {
+              data[i][ii] = $(this).text();
+              }
+          });
+                     $(this).children('td').each(function(ii, vv){
+              if ($(this).text() != null) {
+              data[i][ii] = $(this).text();
+              }
+          });
+        })
+
+        console.log(data);
+
+        jsRoutes.controllers.Application.saveRecords(JSON.stringify(data, null, 2)).ajax(ajax1);
+    }
+
+    function addRecord() {
+        var trInsert = '<tr><td class="tddate">@{manager.Util.nowFormatted}</td>@{records(0)._2.map(x =>
+            <td politic={x._1}>0</td>
+        )}</tr>';
+
+        var rec = @Html(records(0)._2.map(x => x._1).mkString("['","','","\']"));
+
+        for (i = 0; i < rec.length; i++) {
+            jsRoutes.controllers.Application.updateRecord('@{manager.Util.nowFormatted}', rec[i], 0).ajax(ajax1);
+        }
+
+        $('#mainTable tr:last').after(trInsert);
+        $('#mainTable').editableTableWidget().numericInputExample();
+    }
 </script>
 
 }<!--//END main parameter -->
