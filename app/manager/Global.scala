@@ -1,10 +1,9 @@
 import manager.Util
 import org.joda.time.DateTime
-import org.joda.time.format.{DateTimeFormatter, DateTimeFormatterBuilder}
 import play.api.GlobalSettings
 import play.api.Application
 import scala.io.{BufferedSource, Source}
-import java.io.File
+import java.io.{FilenameFilter, File}
 
 import play.api.db.slick.Session
 import scala.slick.lifted.TableQuery
@@ -18,15 +17,31 @@ import scala.slick.driver.H2Driver.simple._
  */
 object Global extends GlobalSettings {
 
+  def main(args: Array[String]) {
+    println(pathDataFile)
+  }
+
   override def onStart(app: Application) {
-    val dataMap: Map[String, List[(String, String, String)]] = parseFile("data/data")
     obtainDB
-    if(checkDbIsEmpty) {
+    if (checkDbIsEmpty) {
+      val dataMap: Map[String, List[(String, String, String)]] = parseFile(pathDataFile)
       fillDb(dataMap)
     }
   }
 
-  def checkDbIsEmpty() : Boolean = {
+  implicit def fileNameOrder: Ordering[String] = Ordering.fromLessThan(_ > _)
+  lazy val pathDataFile: String = {
+    val file: File = new File("data/")
+    val list = file.list(new FilenameFilter {
+      override def accept(p1: File, p2: String): Boolean = {
+        p2.contains("data") && p2.split("_").size == 2
+      }
+    })
+    val listSorted: Array[String] = list.sortBy(identity)
+    s"data/${listSorted(0)}"
+  }
+
+  def checkDbIsEmpty(): Boolean = {
     val politicTable = TableQuery[PoliticTable]
     play.api.db.slick.DB.withSession {
       implicit session: Session => {
@@ -35,6 +50,7 @@ object Global extends GlobalSettings {
       }
     }
   }
+
 
   def parseFile(filePath: String) = {
     val file: BufferedSource = Source.fromFile(new File(filePath))
@@ -56,8 +72,8 @@ object Global extends GlobalSettings {
     play.api.db.slick.DB.withSession {
       implicit session: Session => {
 
-//        session.prepareStatement("delete from record").execute()
-//        session.prepareStatement("delete from politic").execute()
+        //        session.prepareStatement("delete from record").execute()
+        //        session.prepareStatement("delete from politic").execute()
 
         val mapRecordsWithUserId: Map[String, List[(Long, String, String)]] = dataMap.map(record => {
           val id: Long = politicTable.filter(_.name === record._1).firstOption match {

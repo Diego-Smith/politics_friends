@@ -11,9 +11,10 @@ import play.api.Routes
 import manager.Util
 import com.github.tototoshi.slick.H2JodaSupport._
 import play.libs.Json
-import java.io.{FileWriter, File}
+import java.io.{FilenameFilter, File}
 import scalax.file.{Path, FileOps}
 import scalax.io.{Resource, Output}
+import java.util
 
 
 object Application extends Controller {
@@ -61,7 +62,6 @@ object Application extends Controller {
   def updateDate(beforeDate: String, newDate: String) = Action {
     play.api.db.slick.DB.withSession {
       implicit session: Session => {
-        println("testtest")
         val beforeDateParsed: DateTime = DateTime.parse(beforeDate, Util.formatter)
         val newDateParsed: DateTime = DateTime.parse(newDate, Util.formatter)
 
@@ -100,6 +100,7 @@ object Application extends Controller {
     }
   }
 
+  @deprecated
   def saveRecords(data: String) = Action {
     println(data)
     println(Json.parse(data))
@@ -110,16 +111,16 @@ object Application extends Controller {
     play.api.db.slick.DB.withSession {
       implicit session: Session => {
 
-        val queryExtractPoliticRecords = for {
+        val innerJoin = for {
           (politic, record) <- politicTable innerJoin recordTable on (_.id === _.idPolitic)
         } yield (politic.name, record.friends, record.dateInsert)
 
-        val list: List[(String, Long, DateTime)] = queryExtractPoliticRecords.list()
+        val listRecords: List[(String, Long, DateTime)] = innerJoin.list()
 
         val filePath = s"data/${new DateTime().toString("yyyyMMdd")}_data"
 
         val output:Output = Resource.fromOutputStream(new java.io.FileOutputStream(filePath))
-        val line: String = list.map(el => {
+        val line: String = listRecords.map(el => {
             s"${el._1};${el._2};${el._3.toString("dd/MM/yyyy")}"
           }).mkString("\n")
 
